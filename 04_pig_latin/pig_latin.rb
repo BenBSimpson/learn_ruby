@@ -1,84 +1,41 @@
-def translate(input)
-	def is_vowel(letter) 	#is_vowel method determines if a given argument is a vowel
-		vowels = ["a", "e", "i", "o", "u"]
-		if vowels.include?(letter)
-			return true
-		else
-			return false
-		end
-	end
+#method to determine if a vowel is a letter
+def vowel?(letter)
+	vowels = ['a', 'e', 'i', 'o', 'u']
+	vowels.include?(letter)
+end
 
-	if input.include?(" ")
-		words = input.split(" ")
-		i = 0
-		while i < words.length
-			if is_vowel(words[i][0])
-				words[i] = words[i] + "ay"
-			elsif is_vowel(words[i][0]) == false
-				if words[i][0].downcase == "q" && words[i][1].downcase == "u"
-					consonants = words[i][0..1]
-					words[i] = words[i] + words[i][0..1] + "ay"
-					words[i].sub!(consonants, '')
-					i += 1
-					next
-				elsif is_vowel(words[i][1]) == false
-					if words[i][1].downcase == "q" && words[i][2].downcase == "u"
-						consonants = words[i][0..2]
-						words[i] = words[i] + words[i][0..2] + "ay"
-						words[i].sub!(consonants, '')
-					elsif is_vowel(words[i][2]) == false
-						consonants = words[i][0..2]
-						words[i] = words[i] + words[i][0..2] + "ay"
-						words[i].sub!(consonants, '')
-					end
-					consonants = words[i][0..1]
-					words[i] = words[i] + words[i][0..1] + "ay"
-					words[i].sub!(consonants, '')
-				else
-					consonants = words[i][0]
-					words[i] = words[i] + words[i][0] + "ay"
-					words[i].sub!(consonants, '')
-				end
-			end
-			i += 1
-		end
-		return words.join(" ")
+def cut_and_paste(consonants, word)
+	word = "#{word}#{consonants}ay"
+	word.sub!(consonants, '')
+end
+
+def find_consonants(word)
+	i = 0
+	consonants = ""
+	while vowel?(word[i]) == false
+		consonants = "#{consonants}#{word[i]}"
+		i += 1
+	end
+	return consonants
+end
+
+def translate_word(word)
+	if word[0..2] == 'squ'
+		#handles words beginning with 'squ'
+		consonants = 'squ'
+		word = cut_and_paste(consonants, word)
+	elsif word[0..1] == 'qu'
+		#handles words beginning with 'qu'
+		consonants = 'qu'
+		word = cut_and_paste(consonants, word)
+	elsif vowel?(word[0])
+		#handles words beginning with a vowel
+		word = word + 'ay'
 	else
-		if is_vowel(input[0])
-			translated_word = input + "ay"
-			return translated_word
-		elsif is_vowel(input[0]) == false
-			if input[0].downcase == "q" && input[1].downcase == "u"
-				consonants = input[0..1]
-				translated_word = input + input[0..1] + "ay"
-				translated_word.sub!(consonants, '')
-				return translated_word
-			end
-			if is_vowel(input[1]) == false
-				if input[1].downcase == "q" && input[2].downcase == "u"
-					consonants = input[0..2]
-					translated_word = input + input[0..2] + "ay"
-					translated_word.sub!(consonants, '')
-					return translated_word
-				end
-				if is_vowel(input[2]) == false
-					consonants = input[0..2]
-					translated_word = input + input[0..2] + "ay"
-					translated_word.sub!(consonants, '')
-					return translated_word
-				end
-				consonants = input[0..1]
-				translated_word = input + input[0..1] + "ay"
-				translated_word.sub!(consonants, '')
-				return translated_word
-			else
-				consonants = input[0]
-				translated_word = input + input[0] + "ay"
-				translated_word.sub!(consonants, '')
-				return translated_word
-			end
-		end
+		word = cut_and_paste(find_consonants(word), word)
 	end
 end
 
-
+def translate(input)
+	input.split.map { |word| translate_word(word) }.join(" ")
+end
